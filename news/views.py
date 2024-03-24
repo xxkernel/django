@@ -1,6 +1,6 @@
 from typing import Any
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
 from .models import News, Category
 from .forms import NewsForm
@@ -29,6 +29,7 @@ class HomeNews(ListView):
 #     }
 #     return render(request, 'news/index.html', context)
 
+
 class NewsByCategory(ListView):
     model = News
     template_name = 'news/home_news_list.html'
@@ -44,15 +45,24 @@ class NewsByCategory(ListView):
         return News.objects.filter(category_id=self.kwargs['category_id'], is_published=True)
 
 
-def get_category(request, category_id):
-    news = News.objects.filter(category_id=category_id)
-    category = Category.objects.get(pk=category_id)
-    return render(request, 'news/category.html', {'news': news, 'category':category})
+# def get_category(request, category_id):
+#     news = News.objects.filter(category_id=category_id)
+#     category = Category.objects.get(pk=category_id)
+#     return render(request, 'news/category.html', {'news': news, 'category':category})
 
-def view_news(request, news_id):
-    # news_item = News.objects.get(pk=news_id)
-    news_item = get_object_or_404(News, pk=news_id)
-    return render(request, 'news/view_news.html', {'news_item': news_item})
+
+class ViewNews(DetailView):
+    model = News
+    context_object_name = 'news_item'
+    # template_name = 'news/news_detail.html'
+    # pk_url_kwarg = 'news_id'
+
+
+# def view_news(request, news_id):
+#     # news_item = News.objects.get(pk=news_id)
+#     news_item = get_object_or_404(News, pk=news_id)
+#     return render(request, 'news/view_news.html', {'news_item': news_item})
+
 
 def add_news(request):
     if request.method=='POST':
